@@ -6,12 +6,12 @@
  * @av: argument list
  * Return: 0 (success), otherwise (fail)
  */
-int main(int ac, char **av)
+int main(__attribute__((unused)) int ac, char **av)
 {
-	size_t len, nread;
-	char *prompt, *cmdline, path[BUFFER_SIZE], *program_path;
+	size_t len;
+	char *prompt, *cmdline;
 	char **cmd_arg = av;
-	int wstatus, w;
+	int nread;
 
 	len = 0, nread = 0, prompt = "#cisfun$ ";
 	init_sig_handler();
@@ -44,7 +44,7 @@ int main(int ac, char **av)
 			if (cmdline != NULL)
 				free(cmdline);
 		}
-		w = wait(0);
+		wait(0);
 		printf("%s", prompt);
 	} while ((nread = _getline(&cmdline, &len, stdin)) != -1);
 	exit(EXIT_SUCCESS);
@@ -71,7 +71,7 @@ int fork1(char *pg)
  * @prog: Program name
  * @cmd: null-terminated command string
  */
-void panic(char *prog, char *cmd)
+void panic(char *prog, __attribute__((unused)) char *cmd)
 {
 	fprintf(stderr, "%s: %s\n", prog, strerror(errno));
 	exit(1);

@@ -8,7 +8,6 @@
 char *_which(char *pathname)
 {
 	char *env_paths, *segment, path[1024], *token;
-	struct stat st;
 
 	segment = path;
 
