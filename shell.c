@@ -8,12 +8,12 @@
  */
 int main(__attribute__((unused)) int ac, char **av)
 {
-	size_t len;
+	size_t len, i;
 	char *prompt, *cmdline;
-	char **cmd_arg = av;
+	char **cmd_arg = av, **env = environ;
 	int nread;
 
-	len = 0, nread = 0, prompt = "#cisfun$ ";
+	len = 0, nread = 0, i = 0,  prompt = "#cisfun$ ";
 	init_sig_handler();
 	do {
 		if (nread > 0 && cmdline != NULL)
@@ -28,11 +28,22 @@ int main(__attribute__((unused)) int ac, char **av)
 				printf("%s", prompt);
 				continue;
 			}
+
+			if (strcmp("env", cmd_arg[0]) == 0)
+			{
+				i = 0;
+				while (*(env + i) != NULL)
+					printf("%s\n", *(env + i++));
+				printf("%s", prompt);
+				continue;
+			}
+
 			if (strcmp("exit", cmd_arg[0]) == 0)
 			{ /* Exit and clean up if the exit command was entered */
 				free(cmd_arg), free(cmdline);
 				exit(EXIT_SUCCESS);
 			}
+
 			if (fork1(av[0]) == 0)
 			{
 				cmd_arg[0] = _which(cmd_arg[0]);
