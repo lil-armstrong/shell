@@ -30,6 +30,7 @@ extern char **environ;
 
 /* _getline */
 ssize_t _getline(char **line_ptr, size_t *n, FILE *stream);
+void print_prompt(void);
 
 /* _strtok */
 char *_strtok(char *str, const char *delim);
@@ -47,10 +48,10 @@ char *_which(char *path);
 
 /* shell */
 void runcmd(char **cmd_arg);
-void print_prompt(void);
 char **parsecmd(char *cmdline, char *delim);
 void panic(char *pg, char *s);
 int fork1(char *pg);
+int process_input(char **av, char **cmd_arg, char *cmdline);
 
 /* sign_handler */
 void signal_handler(int signo);

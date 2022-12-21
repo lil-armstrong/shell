@@ -50,3 +50,11 @@ ssize_t _getline(char **line_ptr, size_t *n, FILE *stream)
 
 	return (len);
 }
+
+/**
+ * print_prompt - Prints a prompt
+ */
+void print_prompt(void)
+{
+	printf("%s", PROMPT);
+}

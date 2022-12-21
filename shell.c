@@ -8,52 +8,22 @@
  */
 int main(__attribute__((unused)) int ac, char **av)
 {
-	size_t len, i;
+	size_t len;
 	char *cmdline;
-	char **cmd_arg = av, **env = environ;
+	char **cmd_arg = av;
 	int nread;
 
-	len = 0, nread = 0, i = 0;
+	len = 0, nread = 0;
 	init_sig_handler();
 	do {
 		if (nread > 0 && cmdline != NULL)
 		{
 			cmd_arg = parsecmd(cmdline, SPACE_STR);
-			if (cmd_arg == NULL)
-				panic(av[0], cmdline);
-			if (strcmp("cd", cmd_arg[0]) == 0)
+			if (process_input(av, cmd_arg, cmdline) == -1)
 			{
-				if (cmd_arg[1] != NULL)
-					chdir(cmd_arg[1]);
 				print_prompt();
 				continue;
 			}
-
-			if (strcmp("env", cmd_arg[0]) == 0)
-			{
-				i = 0;
-				while (*(env + i) != NULL)
-					printf("%s\n", *(env + i++));
-				print_prompt();
-				continue;
-			}
-
-			if (strcmp("exit", cmd_arg[0]) == 0)
-			{
-				free(cmd_arg), free(cmdline);
-				exit(EXIT_SUCCESS);
-			}
-
-			if (fork1(av[0]) == 0)
-			{
-				cmd_arg[0] = _which(cmd_arg[0]);
-				if (cmd_arg[0] != NULL)
-					runcmd(cmd_arg);
-				panic(av[0], cmd_arg[0]);
-			}
-			free(cmd_arg);
-			if (cmdline != NULL)
-				free(cmdline);
 		}
 		wait(0);
 		print_prompt();
@@ -62,12 +32,54 @@ int main(__attribute__((unused)) int ac, char **av)
 }
 
 /**
- * print_prompt - Prints a prompt
+ * process_input - Processes the command line input
+ * @av: program argument list
+ * @cmd_arg: custom commandline argument list
+ * @cmdline: commandline null-terminated string
+ * Return: 1 (success), -1 (fail)
  */
-void print_prompt(void)
+int process_input(char **av, char **cmd_arg, char *cmdline)
 {
-	printf("%s", PROMPT);
+	char **env = environ;
+	int i;
+
+	if (cmd_arg == NULL)
+		panic(av[0], cmdline);
+	if (strcmp("cd", cmd_arg[0]) == 0)
+	{
+		if (cmd_arg[1] != NULL)
+			chdir(cmd_arg[1]);
+		return (-1);
+	}
+
+	if (strcmp("env", cmd_arg[0]) == 0)
+	{
+		i = 0;
+		while (*(env + i) != NULL)
+			printf("%s\n", *(env + i++));
+		return (-1);
+	}
+
+	if (strcmp("exit", cmd_arg[0]) == 0)
+	{
+		free(cmd_arg), free(cmdline);
+		exit(EXIT_SUCCESS);
+	}
+
+	if (fork1(av[0]) == 0)
+	{
+		cmd_arg[0] = _which(cmd_arg[0]);
+		if (cmd_arg[0] != NULL)
+			runcmd(cmd_arg);
+		panic(av[0], cmd_arg[0]);
+	}
+	free(cmd_arg);
+	if (cmdline != NULL)
+		free(cmdline);
+
+	return (1);
 }
+
 
 /**
  * fork1 - forks a new child process
