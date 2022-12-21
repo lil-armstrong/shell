@@ -38,15 +38,15 @@ int main(__attribute__((unused)) int ac, char **av)
 				continue;
 			}
 
-			if (strcmp("exit", cmd_arg[0]) == 0)
-			{ /* Exit and clean up if the exit command was entered */
+			/*if (strcmp("exit", cmd_arg[0]) == 0)
+			{
 				free(cmd_arg), free(cmdline);
 				exit(EXIT_SUCCESS);
-			}
+			}*/
 
 			if (fork1(av[0]) == 0)
 			{
-				cmd_arg[0] = _which(cmd_arg[0]);
+				/*cmd_arg[0] = _which(cmd_arg[0]);*/
 				if (cmd_arg[0] != NULL)
 					runcmd(cmd_arg);
 				panic(av[0], cmd_arg[0]);
@@ -96,6 +96,10 @@ void panic(char *prog, __attribute__((unused)) char *cmd)
 void runcmd(char **cmd_arg)
 {
 	char **env = environ;
+	char *args[2];
 
-	execve(cmd_arg[0], cmd_arg, env);
+	args[0] = cmd_arg[0],
+	args[1] = NULL;
+
+	execve(cmd_arg[0], args, env);
 }
