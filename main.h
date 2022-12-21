@@ -22,6 +22,7 @@
 #define DIR_C 0
 #define DIR_R 1
 #define _CRTDBG_MAP_ALLOC
+#define PROMPT "#cisfun$ "
 #define SPACE_STR " "
 #define PIPE_STR "|"
 
@@ -46,6 +47,7 @@ char *_which(char *path);
 
 /* shell */
 void runcmd(char **cmd_arg);
+void print_prompt(void);
 char **parsecmd(char *cmdline, char *delim);
 void panic(char *pg, char *s);
 int fork1(char *pg);

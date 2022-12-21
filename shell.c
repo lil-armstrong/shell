@@ -9,11 +9,11 @@
 int main(__attribute__((unused)) int ac, char **av)
 {
 	size_t len, i;
-	char *prompt, *cmdline;
+	char *cmdline;
 	char **cmd_arg = av, **env = environ;
 	int nread;
 
-	len = 0, nread = 0, i = 0,  prompt = "#cisfun$ ";
+	len = 0, nread = 0, i = 0;
 	init_sig_handler();
 	do {
 		if (nread > 0 && cmdline != NULL)
@@ -25,7 +25,7 @@ int main(__attribute__((unused)) int ac, char **av)
 			{
 				if (cmd_arg[1] != NULL)
 					chdir(cmd_arg[1]);
-				printf("%s", prompt);
+				print_prompt();
 				continue;
 			}
 
@@ -34,19 +34,19 @@ int main(__attribute__((unused)) int ac, char **av)
 				i = 0;
 				while (*(env + i) != NULL)
 					printf("%s\n", *(env + i++));
-				printf("%s", prompt);
+				print_prompt();
 				continue;
 			}
 
-			/*if (strcmp("exit", cmd_arg[0]) == 0)
+			if (strcmp("exit", cmd_arg[0]) == 0)
 			{
 				free(cmd_arg), free(cmdline);
 				exit(EXIT_SUCCESS);
-			}*/
+			}
 
 			if (fork1(av[0]) == 0)
 			{
-				/*cmd_arg[0] = _which(cmd_arg[0]);*/
+				cmd_arg[0] = _which(cmd_arg[0]);
 				if (cmd_arg[0] != NULL)
 					runcmd(cmd_arg);
 				panic(av[0], cmd_arg[0]);
@@ -56,11 +56,18 @@ int main(__attribute__((unused)) int ac, char **av)
 				free(cmdline);
 		}
 		wait(0);
-		printf("%s", prompt);
+		print_prompt();
 	} while ((nread = _getline(&cmdline, &len, stdin)) != -1);
 	exit(EXIT_SUCCESS);
 }
 
+/**
+ * print_prompt - Prints a prompt
+ */
+void print_prompt(void)
+{
+	printf("%s", PROMPT);
+}
 
 /**
  * fork1 - forks a new child process
